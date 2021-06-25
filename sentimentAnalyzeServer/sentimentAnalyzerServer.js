@@ -12,8 +12,8 @@ function getNLUInstance() {
     const NaturalLanguageUnderstandingV1=require('ibm-watson/natural-language-understanding/v1');
     const { IamAuthenticator } = require('ibm-watson/auth');
     console.log('INITIALIZE INSTANCE OF WATSON LUv1');
-    console.log(api_key);
-    console.log(api_url);
+    //console.log(api_key);
+    //console.log(api_url);
     const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
         version: '2020-08-01',
         authenticator: new IamAuthenticator({
@@ -21,6 +21,7 @@ function getNLUInstance() {
         }),
         serviceUrl: api_url,
     });
+    console.log('WATSON LINK INITIALIZED');
     return naturalLanguageUnderstanding;
 }
 
@@ -36,18 +37,47 @@ app.get("/",(req,res)=>{
 app.get("/url/emotion", (req,res) => {
     nlu = getNLUInstance();
     console.log(nlu);
-    return res.send({"happy":"90","sad":"10"});
+    return res.send({"happy":"90","sad":"10", "nlu version":nlu.version,});
 });
 
 app.get("/url/sentiment", (req,res) => {
     return res.send("url sentiment for "+req.query.url);
 });
 
+// ---------- EMOTIONS ------------
+
+
+
+
 app.get("/text/emotion", (req,res) => {
-    nlu = getNLUInstance();
-    console.log(nlu);
-    return res.send({"happy":"10","sad":"90"});
+
+    const analyzeParams = {
+    'html': '<html><head><title></title></head><body><h1>sadness joy fear disgust anger</h1><p></p></body></html>',
+    'features': {
+        'emotion': {
+        'targets': [
+            'sadness',
+            'joy',
+            'fear',
+            'disgust',
+            'anger',
+        ]
+        }
+    }
+    };
+    getNLUInstance().analyze(analyzeParams)
+        .then(analysisResults => {
+            console.log(JSON.stringify(analysisResults, null, 2));
+            console.log(nlu);
+             return res.send(analysisResults);
+        })
+        .catch(err => {
+            console.log('error:', err);
+            return res.send(err);
+        });
 });
+
+// ---------- SENTIMENTS -----------
 
 app.get("/text/sentiment", (req,res) => {
     nlu = getNLUInstance();
