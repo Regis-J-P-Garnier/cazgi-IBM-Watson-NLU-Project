@@ -34,8 +34,13 @@ function getAnalizeParameter(parameters) {
                 'entities': {
                     'sentiment': parameters.sentiment,
                     'emotion': parameters.emotion,
-                    'limit': 1
-                }
+                    'limit': 2
+                },
+                'keywords': {
+                    'sentiment': parameters.sentiment,
+                    'emotion': parameters.emotion,
+                    'limit': 2,
+                },
             }
         };
     }
@@ -48,7 +53,12 @@ function getAnalizeParameter(parameters) {
                     'sentiment': parameters.sentiment,
                     'emotion': parameters.emotion,
                     'limit': 1
-                }
+                },
+                'keywords': {
+                    'sentiment': parameters.sentiment,
+                    'emotion': parameters.emotion,
+                    'limit': 2,
+                },
             }
         };     
     }
@@ -64,7 +74,7 @@ app.get("/",(req,res)=>{
     res.render('index.html');
   });
 
-// ---------- TEXT EMOTIONS ------------
+// ---------- URL EMOTIONS ------------
 
 app.get("/url/emotion", (req,res) => {
     console.log('FROM URL EMOTION');
@@ -79,7 +89,7 @@ app.get("/url/emotion", (req,res) => {
             
             console.log("WATSON responds !");
             console.log(JSON.stringify(analysisResults.result, null, 2));
-            res.send(analysisResults.result);
+            res.send(analysisResults);
         })
         .catch(err => {
             console.log("WATSON return an error !");
@@ -104,7 +114,7 @@ app.get("/url/sentiment", (req,res) => {
             
             console.log("WATSON responds !");
             console.log(JSON.stringify(analysisResults.result, null, 2));
-            res.send(analysisResults.result);
+            res.send(analysisResults);
         })
         .catch(err => {
             console.log("WATSON return an error !");
