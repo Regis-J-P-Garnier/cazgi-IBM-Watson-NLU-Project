@@ -25,6 +25,36 @@ function getNLUInstance() {
     return naturalLanguageUnderstanding;
 }
 
+function getAnalizeParameter(parameters) {
+    if (parameters.url === null)
+    {
+        return {
+            'text': parameters.text,
+            'features': {
+                'entities': {
+                    'sentiment': parameters.sentiment,
+                    'emotion': parameters.emotion,
+                    'limit': 1
+                }
+            }
+        };
+    }
+    else
+    {
+        return {
+            'url' : parameters.url,
+            'features': {
+                'entities': {
+                    'sentiment': parameters.sentiment,
+                    'emotion': parameters.emotion,
+                    'limit': 1
+                }
+            }
+        };     
+    }
+
+}
+
 app.use(express.static('client'))
 
 const cors_app = require('cors');
@@ -35,47 +65,62 @@ app.get("/",(req,res)=>{
   });
 
 app.get("/url/emotion", (req,res) => {
-    nlu = getNLUInstance();
+    console.log('FROM URL EMOTION');
+    var analyzeParams = null;
+    analyzeParams.getNLUInstance = getNLUInstance();
+
     //console.log(nlu);
     return res.send({"happy":"90","sad":"10", "nlu version":nlu.version,});
 });
 
 app.get("/url/sentiment", (req,res) => {
-    return res.send("url sentiment for "+req.query.url);
+    console.log('FROM URL SENTIMENT');
+    //console.log(req);
+    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+                                    "url": req.query.url, 
+                                    "text": null, 
+                                    "sentiment": true,emotion:false};
+    //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
+    rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
+        .then(analysisResults => {
+            
+            console.log("WATSON responds !");
+            console.log(JSON.stringify(analysisResults, null, 2));
+            res.send(analysisResults);
+        })
+        .catch(err => {
+            console.log("WATSON return an error !");
+            console.log('error:', err);
+            res.send(err);
+        });
 });
-
 // ---------- EMOTIONS ------------
 
 app.get("/text/emotion", (req,res) => {
-    console.log(req.query.text);
-    const analyzeParams = {
-        //'text': 'Three grand essentials to happiness in this life are something to do, something to love, and something to hope for. Joseph Addison',
-        'text': req.query.text,
-        //'html': '<html><head><title>joy and sadness</title></head><body><p>'+req.query.text+'</p></body><html>', // why not a TEXT instead ?
-        'features': {
-            'entities': {
-                'sentiment': false,
-                'emotion': true,
-                'limit': 3
-            }
-        }
-    };
-    getNLUInstance().analyze(analyzeParams)
+    console.log('FROM TEXT EMOTION');
+    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+                                    "url": null, 
+                                    "text": req.query.text, 
+                                    "sentiment": false,emotion:true};
+    //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
+    rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
         .then(analysisResults => {
-            console.log(JSON.stringify(analyzeParams, null, 2));
+            
+            console.log("WATSON responds !");
             console.log(JSON.stringify(analysisResults, null, 2));
-            //console.log(nlu);
-             return res.send(analysisResults);
+            res.send(analysisResults);
         })
         .catch(err => {
+            console.log("WATSON return an error !");
             console.log('error:', err);
-            return res.send(err);
+            res.send(err);
         });
 });
 
 // ---------- SENTIMENTS -----------
 
 app.get("/text/sentiment", (req,res) => {
+    console.log('FROM TEXT SENTIMENT');
     nlu = getNLUInstance();
     //console.log(nlu);
     return res.send("text sentiment for "+req.query.text);
