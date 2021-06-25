@@ -29,7 +29,8 @@ app.get("/",(req,res)=>{
   });
 
 app.get("/url/emotion", (req,res) => {
-
+    nlu = getNLUInstance();
+    console.log(nlu);
     return res.send({"happy":"90","sad":"10"});
 });
 
@@ -38,14 +39,20 @@ app.get("/url/sentiment", (req,res) => {
 });
 
 app.get("/text/emotion", (req,res) => {
+    nlu = getNLUInstance();
+    console.log(nlu);
     return res.send({"happy":"10","sad":"90"});
 });
 
 app.get("/text/sentiment", (req,res) => {
+    nlu = getNLUInstance();
+    console.log(nlu);
     return res.send("text sentiment for "+req.query.text);
 });
 
 let server = app.listen(8080, () => {
+    nlu = getNLUInstance();
+    console.log(nlu);
     console.log('Listening', server.address().port)
 })
 
