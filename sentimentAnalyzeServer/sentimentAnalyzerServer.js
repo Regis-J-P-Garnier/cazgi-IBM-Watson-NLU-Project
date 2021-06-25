@@ -46,24 +46,20 @@ app.get("/url/sentiment", (req,res) => {
 
 // ---------- EMOTIONS ------------
 
-
-
-
 app.get("/text/emotion", (req,res) => {
 
     const analyzeParams = {
-    'html': '<html><head><title></title></head><body><h1>sadness joy fear disgust anger</h1><p></p></body></html>',
-    'features': {
-        'emotion': {
-        'targets': [
-            'sadness',
-            'joy',
-            'fear',
-            'disgust',
-            'anger',
-        ]
+        'features': {
+            'emotion': {
+                'targets': [
+                    'sadness',
+                    'joy',
+                    'fear',
+                    'disgust',
+                    'anger',
+                ]
+            }
         }
-    }
     };
     getNLUInstance().analyze(analyzeParams)
         .then(analysisResults => {
