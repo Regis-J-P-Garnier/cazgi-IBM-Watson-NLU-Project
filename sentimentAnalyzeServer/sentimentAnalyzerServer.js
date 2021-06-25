@@ -14,7 +14,7 @@ function getNLUInstance() {
     console.log('INITIALIZE INSTANCE OF WATSON LUv1');
     console.log(api_key);
     console.log(api_url);
-    const naturalLanguageUnderstanding = NaturalLanguageUnderstandingV1({
+    const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
         version: '2020-08-01',
         authenticator: new IamAuthenticator({
         apikey: api_key,
