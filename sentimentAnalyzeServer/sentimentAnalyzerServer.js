@@ -26,6 +26,7 @@ function getNLUInstance() {
 }
 
 function getAnalizeParameter(parameters) {
+    // extended form for readability first
     if (parameters.url === null)
     {
         return {
@@ -52,7 +53,7 @@ function getAnalizeParameter(parameters) {
                 'entities': {
                     'sentiment': parameters.sentiment,
                     'emotion': parameters.emotion,
-                    'limit': 1
+                    'limit': 2
                 },
                 'keywords': {
                     'sentiment': parameters.sentiment,
@@ -78,12 +79,11 @@ app.get("/",(req,res)=>{
 
 app.get("/url/emotion", (req,res) => {
     console.log('FROM URL EMOTION');
-    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+    let rqtParams = {"getNLUInstance": getNLUInstance(), // CALL in each app.get
                                     "url": req.query.url, 
                                     "text": null, 
                                     "sentiment": false,
                                     "emotion" :true};
-    //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
     rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
         .then(analysisResults => {
             
@@ -103,7 +103,7 @@ app.get("/url/emotion", (req,res) => {
 app.get("/url/sentiment", (req,res) => {
     console.log('FROM URL SENTIMENT');
     //console.log(req);
-    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+    let rqtParams = {"getNLUInstance": getNLUInstance(), // CALL in each app.get
                                     "url": req.query.url, 
                                     "text": null, 
                                     "sentiment": true, 
@@ -126,7 +126,7 @@ app.get("/url/sentiment", (req,res) => {
 
 app.get("/text/emotion", (req,res) => {
     console.log('FROM TEXT EMOTION');
-    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+    let rqtParams = {"getNLUInstance": getNLUInstance(), // CALL in each app.get
                                     "url": null, 
                                     "text": req.query.text, 
                                     "sentiment": false,
@@ -150,7 +150,7 @@ app.get("/text/emotion", (req,res) => {
 
 app.get("/text/sentiment", (req,res) => {
     console.log('FROM TEXT SENTIMENT');
-    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+    let rqtParams = {"getNLUInstance": getNLUInstance(), // CALL in each app.get
                                     "url": null,
                                     "text": req.query.text,  
                                     "sentiment": true, 

@@ -6,11 +6,17 @@ class EmotionTable extends React.Component {
       return (  
         <div>
           {/*You can remove this line and the line below. */}
-          {JSON.stringify(this.props.emotions)}
+          {/*JSON.stringify(this.props.emotions)*/}
           <table className="table table-bordered">
             <tbody>
             {
-                //Write code to use the .map method that you worked on in the Hands-on React lab to extract the emotions
+            this.props.emotions.map((item, index) => {
+                return(
+                <tr>
+                <td>{JSON.stringify({item})}</td>
+                <td>{JSON.stringify({index})}</td>
+                </tr>); 
+            })
             }
             </tbody>
           </table>
