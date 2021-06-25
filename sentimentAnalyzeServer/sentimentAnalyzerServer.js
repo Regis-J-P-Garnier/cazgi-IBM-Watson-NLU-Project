@@ -36,7 +36,7 @@ app.get("/",(req,res)=>{
 
 app.get("/url/emotion", (req,res) => {
     nlu = getNLUInstance();
-    console.log(nlu);
+    //console.log(nlu);
     return res.send({"happy":"90","sad":"10", "nlu version":nlu.version,});
 });
 
@@ -47,24 +47,24 @@ app.get("/url/sentiment", (req,res) => {
 // ---------- EMOTIONS ------------
 
 app.get("/text/emotion", (req,res) => {
-
+    console.log(req.query.text);
     const analyzeParams = {
+        //'text': 'Three grand essentials to happiness in this life are something to do, something to love, and something to hope for. Joseph Addison',
+        'text': req.query.text,
+        //'html': '<html><head><title>joy and sadness</title></head><body><p>'+req.query.text+'</p></body><html>', // why not a TEXT instead ?
         'features': {
-            'emotion': {
-                'targets': [
-                    'sadness',
-                    'joy',
-                    'fear',
-                    'disgust',
-                    'anger',
-                ]
+            'entities': {
+                'sentiment': false,
+                'emotion': true,
+                'limit': 3
             }
         }
     };
     getNLUInstance().analyze(analyzeParams)
         .then(analysisResults => {
+            console.log(JSON.stringify(analyzeParams, null, 2));
             console.log(JSON.stringify(analysisResults, null, 2));
-            console.log(nlu);
+            //console.log(nlu);
              return res.send(analysisResults);
         })
         .catch(err => {
@@ -77,13 +77,13 @@ app.get("/text/emotion", (req,res) => {
 
 app.get("/text/sentiment", (req,res) => {
     nlu = getNLUInstance();
-    console.log(nlu);
+    //console.log(nlu);
     return res.send("text sentiment for "+req.query.text);
 });
 
 let server = app.listen(8080, () => {
-    nlu = getNLUInstance();
-    console.log(nlu);
+    //nlu = getNLUInstance();
+    //console.log(nlu);
     console.log('Listening', server.address().port)
 })
 
