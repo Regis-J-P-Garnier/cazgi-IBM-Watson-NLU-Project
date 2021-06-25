@@ -64,14 +64,31 @@ app.get("/",(req,res)=>{
     res.render('index.html');
   });
 
+// ---------- TEXT EMOTIONS ------------
+
 app.get("/url/emotion", (req,res) => {
     console.log('FROM URL EMOTION');
-    var analyzeParams = null;
-    analyzeParams.getNLUInstance = getNLUInstance();
-
-    //console.log(nlu);
-    return res.send({"happy":"90","sad":"10", "nlu version":nlu.version,});
+    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+                                    "url": req.query.url, 
+                                    "text": null, 
+                                    "sentiment": false,
+                                    "emotion" :true};
+    //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
+    rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
+        .then(analysisResults => {
+            
+            console.log("WATSON responds !");
+            console.log(JSON.stringify(analysisResults.result, null, 2));
+            res.send(analysisResults.result);
+        })
+        .catch(err => {
+            console.log("WATSON return an error !");
+            console.log('error:', err);
+            res.send(err);
+        });
 });
+
+// ---------- TEXT EMOTIONS ------------
 
 app.get("/url/sentiment", (req,res) => {
     console.log('FROM URL SENTIMENT');
@@ -79,14 +96,15 @@ app.get("/url/sentiment", (req,res) => {
     let rqtParams = {"getNLUInstance": getNLUInstance(), 
                                     "url": req.query.url, 
                                     "text": null, 
-                                    "sentiment": true,emotion:false};
+                                    "sentiment": true, 
+                                    "emotion":false};
     //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
     rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
         .then(analysisResults => {
             
             console.log("WATSON responds !");
-            console.log(JSON.stringify(analysisResults, null, 2));
-            res.send(analysisResults);
+            console.log(JSON.stringify(analysisResults.result, null, 2));
+            res.send(analysisResults.result);
         })
         .catch(err => {
             console.log("WATSON return an error !");
@@ -94,21 +112,22 @@ app.get("/url/sentiment", (req,res) => {
             res.send(err);
         });
 });
-// ---------- EMOTIONS ------------
+// ---------- TEXT EMOTIONS ------------
 
 app.get("/text/emotion", (req,res) => {
     console.log('FROM TEXT EMOTION');
     let rqtParams = {"getNLUInstance": getNLUInstance(), 
                                     "url": null, 
                                     "text": req.query.text, 
-                                    "sentiment": false,emotion:true};
+                                    "sentiment": false,
+                                    "emotion" :true};
     //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
     rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
         .then(analysisResults => {
             
             console.log("WATSON responds !");
-            console.log(JSON.stringify(analysisResults, null, 2));
-            res.send(analysisResults);
+            console.log(JSON.stringify(analysisResults.result, null, 2));
+            res.send(analysisResults.result);
         })
         .catch(err => {
             console.log("WATSON return an error !");
@@ -117,13 +136,28 @@ app.get("/text/emotion", (req,res) => {
         });
 });
 
-// ---------- SENTIMENTS -----------
+// ---------- TEXT SENTIMENTS -----------
 
 app.get("/text/sentiment", (req,res) => {
     console.log('FROM TEXT SENTIMENT');
-    nlu = getNLUInstance();
-    //console.log(nlu);
-    return res.send("text sentiment for "+req.query.text);
+    let rqtParams = {"getNLUInstance": getNLUInstance(), 
+                                    "url": null,
+                                    "text": req.query.text,  
+                                    "sentiment": true, 
+                                    "emotion": false};
+    //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
+    rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
+        .then(analysisResults => {
+            
+            console.log("WATSON responds !");
+            console.log(JSON.stringify(analysisResults.result, null, 2));
+            res.send(analysisResults.result);
+        })
+        .catch(err => {
+            console.log("WATSON return an error !");
+            console.log('error:', err);
+            res.send(err);
+        });
 });
 
 let server = app.listen(8080, () => {
