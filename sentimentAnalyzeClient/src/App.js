@@ -4,11 +4,32 @@ import EmotionTable from './EmotionTable.js';
 import React from 'react';
 import axios from 'axios';
 
+class SentimentList extends React.Component { // need upgrade and specialization
+    render() {
+      return ( 
+        <div>{
+            this.props.sentiments.map((item, index) => {return(<div>{item}</div>)})
+        }</div>
+        );
+    };
+};
+
+class ConcatenateTables extends React.Component { // need upgrade and specialization
+    render() {
+      return ( 
+        <div>{
+            this.props.components.map((item, index) => {return({item})})      
+        }
+        </div>
+        );
+    }
+};
 
 class App extends React.Component {
   state = {innercomp:<textarea rows="4" cols="50" id="textinput"/>,
             mode: "text",
           sentimentOutput:[],
+          sentimentPersonsOutput:[],
           sentiment:true,
           logvalue:""
         }
@@ -67,22 +88,33 @@ class App extends React.Component {
       this.setState({sentimentOutput:response.data});
       this.setLogReturnedValue(response.data);
       let output = response.data;
-      //if(response.data === "positive") {
-       // output = <div style={{color:"green",fontSize:20}}>{response.data}</div>
-      //} else if (response.data === "negative"){
-       // output = <div style={{color:"red",fontSize:20}}>{response.data}</div>
-      //} else {
-       // output = <div style={{color:"orange",fontSize:20}}>{response.data}</div>
-      //}
     */
    // MOCK
+
     var response = {};
     response.data = { "usage": { "text_units": 1, "text_characters": 269, "features": 2 }, "language": "en", "keywords": [ { "text": "one-year bishopric", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.88081, "count": 1 }, { "text": "Ecumenical Patriarch of Constantinople", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.736151, "count": 1 } ], "entities": [ { "type": "Location", "text": "Constantinople", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.970822, "count": 3, "confidence": 0.988081 }, { "type": "Person", "text": "George", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.674048, "count": 1, "confidence": 0.993361 } ] };
+    
+    let outputArray = response.data.keywords.concat(response.data.entities);
+    let outputString = '';
+    let outputStringsArray = [];
+    outputArray.map((item, index) => {
+        if(item.sentiment.label === "positive") {
+            outputString = <div style={{color:"green",fontSize:20}}>{item.text}</div>
+        } else if (item.sentiment.label === "negative"){
+            outputString = <div style={{color:"red",fontSize:20}}>{item.text}</div>
+        } else {
+            outputString = <div style={{color:"orange",fontSize:20}}>{item.text}</div>
+        }
+        outputStringsArray[index]=outputString
+    });
     this.setLogReturnedValue(response.data);
-    this.setState({sentimentOutput:JSON.stringify(response.data.keywords)});
+    //this.setState({sentimentOutput:JSON.stringify(response.data.keywords[0])});
+    //this.setState({sentimentPersonsOutput:JSON.stringify(response.data.entities[0])});
     // END MOCK
-    /*this.setState({sentimentOutput:output});
-    });*/
+    this.setState({sentimentOutput:<SentimentList sentiments={outputStringsArray}/>});
+    //this.setState({sentimentOutput:outputStringsArray});
+    this.setState({sentimentPersonsOutput:""});
+    //});*/
   }
 
   sendForEmotionAnalysis = () => {
@@ -107,7 +139,9 @@ class App extends React.Component {
     
     this.setLogReturnedValue(response.data);
     this.setState({sentimentOutput:<EmotionTable emotions={response.data.keywords}/>});
-  // END MOCK
+    this.setState({sentimentPersonsOutput:<EmotionTable emotions={response.data.entities}/>});
+    this.setState({sentimentOutput:<ConcatenateTables components={[this.state.sentimentOutput,this.state.sentimentPersonsOutput]}/>});
+    // END MOCK
    
   }
   
@@ -126,8 +160,10 @@ class App extends React.Component {
         <button className="btn-primary" onClick={this.sendForSentimentAnalysis}>Analyze Sentiment</button>
         <button className="btn-primary" onClick={this.sendForEmotionAnalysis}>Analyze Emotion</button>
          <br/>
+         <h2>"DEBUG : response from Watson with NODE by JSON over HTTP"</h2>
          {this.logvalue}
          <br/>
+         <h2>"OUTPUT : response from Watson with REAL"</h2>
          {this.state.sentimentOutput}
       </div>
       );
