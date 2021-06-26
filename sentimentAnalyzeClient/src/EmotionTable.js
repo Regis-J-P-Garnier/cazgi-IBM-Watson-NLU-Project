@@ -10,7 +10,6 @@ class EmotionTable extends React.Component {
           <table className="table table-bordered">
             <thead>
             <tr>
-                <th>index</th>
                 <th>type</th>
                 <th>text</th>
                 <th>sadness</th>
@@ -28,7 +27,6 @@ class EmotionTable extends React.Component {
             classItem.map((item, index) => {
                 return(
                 <tr>
-                    <td>{JSON.stringify(index)}</td>
                     <td>{JSON.stringify(item.type)}</td>
                     <td>{JSON.stringify(item.text)}</td>
                     <td>{JSON.stringify(item.emotion.sadness)}</td>

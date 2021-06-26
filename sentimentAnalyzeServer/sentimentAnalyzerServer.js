@@ -89,6 +89,7 @@ app.get("/url/emotion", (req,res) => {
             
             console.log("WATSON responds !");
             console.log(JSON.stringify(analysisResults.result, null, 2));
+            analysisResults.result.retrieved_url="";
             res.send(analysisResults);
         })
         .catch(err => {
@@ -98,7 +99,7 @@ app.get("/url/emotion", (req,res) => {
         });
 });
 
-// ---------- TEXT EMOTIONS ------------
+// ---------- URL SENTIMENTS ------------
 
 app.get("/url/sentiment", (req,res) => {
     console.log('FROM URL SENTIMENT');
@@ -111,9 +112,9 @@ app.get("/url/sentiment", (req,res) => {
     //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
     rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
         .then(analysisResults => {
-            
             console.log("WATSON responds !");
             console.log(JSON.stringify(analysisResults.result, null, 2));
+            analysisResults.result.retrieved_url="";
             res.send(analysisResults);
         })
         .catch(err => {
@@ -134,9 +135,9 @@ app.get("/text/emotion", (req,res) => {
     //console.log(JSON.stringify(getAnalizeParameter(rqtParams), null, 2));
     rqtParams.getNLUInstance.analyze(getAnalizeParameter(rqtParams))
         .then(analysisResults => {
-            
             console.log("WATSON responds !");
             console.log(JSON.stringify(analysisResults.result, null, 2));
+            analysisResults.result.retrieved_url="";
             res.send(analysisResults.result);
         })
         .catch(err => {
@@ -161,6 +162,7 @@ app.get("/text/sentiment", (req,res) => {
             
             console.log("WATSON responds !");
             console.log(JSON.stringify(analysisResults.result, null, 2));
+            analysisResults.result.retrieved_url="";
             res.send(analysisResults.result);
         })
         .catch(err => {

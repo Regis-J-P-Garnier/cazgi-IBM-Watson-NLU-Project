@@ -4,27 +4,19 @@ import EmotionTable from './EmotionTable.js';
 import React from 'react';
 import axios from 'axios';
 
-class SentimentList extends React.Component { // need upgrade and specialization
-    render() {
-      return ( 
-        <div>{
-            this.props.sentiments.map((item, index) => {return(<div>{item}</div>)})
-        }</div>
-        );
-    };
-};
-
 class App extends React.Component {
   state = {innercomp:<textarea rows="4" cols="50" id="textinput"/>,
             mode: "text",
           sentimentOutput:[],
           sentiment:true,
-          logvalue:""
+          logvalue:[],
         }
 
 
   setLogReturnedValue = (data) =>{
-      this.logvalue = JSON.stringify(data, null, 2) ;
+      this.setState({
+                  logvalue: JSON.stringify(data, null, 2)
+              });
     } 
   
   renderTextArea = ()=>{
@@ -55,6 +47,71 @@ class App extends React.Component {
 
 /* SENTIMENTAL RESPONSE
 { "usage": { "text_units": 1, "text_characters": 269, "features": 2 }, "language": "en", "keywords": [ { "text": "one-year bishopric", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.88081, "count": 1 }, { "text": "Ecumenical Patriarch of Constantinople", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.736151, "count": 1 } ], "entities": [ { "type": "Location", "text": "Constantinople", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.970822, "count": 3, "confidence": 0.988081 }, { "type": "Person", "text": "George", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.674048, "count": 1, "confidence": 0.993361 } ] }
+{
+  "usage": {
+    "text_units": 1,
+    "text_characters": 6837,
+    "features": 2
+  },
+  "retrieved_url": "https://en.wikipedia.org/wiki/George_I_of_Constantinople",
+  "language": "en",
+  "keywords": [
+    {
+      "text": "Terms of Use",
+      "relevance": 0.659964,
+      "emotion": {
+        "sadness": 0.107056,
+        "joy": 0.162192,
+        "fear": 0.030613,
+        "disgust": 0.149681,
+        "anger": 0.049642
+      },
+      "count": 1
+    },
+    {
+      "text": "Byzantine period",
+      "relevance": 0.592172,
+      "emotion": {
+        "sadness": 0.135427,
+        "joy": 0.032726,
+        "fear": 0.31763,
+        "disgust": 0.087577,
+        "anger": 0.065639
+      },
+      "count": 1
+    }
+  ],
+  "entities": [
+    {
+      "type": "Location",
+      "text": "Constantinople",
+      "relevance": 0.950869,
+      "emotion": {
+        "sadness": 0.069825,
+        "joy": 0.414539,
+        "fear": 0.022974,
+        "disgust": 0.068648,
+        "anger": 0.092213
+      },
+      "count": 17,
+      "confidence": 1
+    },
+    {
+      "type": "Person",
+      "text": "George",
+      "relevance": 0.306308,
+      "emotion": {
+        "sadness": 0.317465,
+        "joy": 0.078998,
+        "fear": 0.235657,
+        "disgust": 0.21406,
+        "anger": 0.119763
+      },
+      "count": 6,
+      "confidence": 1
+    }
+  ]
+}
 */
 
   sendForSentimentAnalysis = () => {
@@ -63,8 +120,10 @@ class App extends React.Component {
     let url = ".";
 
     if(this.state.mode === "url") {
+    // send GET URL -> "url" field
       url = url+"/url/sentiment?url="+document.getElementById("textinput").value;
     } else {
+    // send GET TEXT -> "text" field
       url = url+"/text/sentiment?text="+document.getElementById("textinput").value;
     }
 
@@ -75,20 +134,19 @@ class App extends React.Component {
         // response.data = { "usage": { "text_units": 1, "text_characters": 269, "features": 2 }, "language": "en", "keywords": [ { "text": "one-year bishopric", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.88081, "count": 1 }, { "text": "Ecumenical Patriarch of Constantinople", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.736151, "count": 1 } ], "entities": [ { "type": "Location", "text": "Constantinople", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.970822, "count": 3, "confidence": 0.988081 }, { "type": "Person", "text": "George", "sentiment": { "score": 0, "label": "neutral" }, "relevance": 0.674048, "count": 1, "confidence": 0.993361 } ] };
         // END MOCK
         let outputArray = response.data.keywords.concat(response.data.entities);
-        let outputString = '';
-        let outputStringsArray = [];
-        outputArray.map((item, index) => {
-            if(item.sentiment.label === "positive") {
-                outputString = <div style={{color:"green",fontSize:20}}>{item.text}</div>
-            } else if (item.sentiment.label === "negative"){
-                outputString = <div style={{color:"red",fontSize:20}}>{item.text}</div>
-            } else {
-                outputString = <div style={{color:"orange",fontSize:20}}>{item.text}</div>
-            }
-            outputStringsArray[index]=outputString
-        });
+        this.setState({sentimentOutput: <div></div>});
         this.setLogReturnedValue(response.data);
-        this.setState({sentimentOutput:<SentimentList sentiments={outputStringsArray}/>});
+        outputArray.map((item, index) => { //convert
+            if(item.sentiment.label === "positive") {
+            return(this.setState({sentimentOutput: <div>{this.state.sentimentOutput} <div style={{color:"green",fontSize:20}}>{item.text}</div></div>}));
+            } else if (item.sentiment.label === "negative"){
+               return(this.setState({sentimentOutput: <div>{this.state.sentimentOutput} <div style={{color:"red",fontSize:20}}>{item.text}</div></div>}));
+            } else {
+               return(this.setState({sentimentOutput: <div>{this.state.sentimentOutput} <div style={{color:"orange",fontSize:20}}>{item.text}</div></div>}));
+            }          
+            });
+        //this.setState({sentimentOutput:<SentimentList sentiments={null} />});
+        //this.setState({sentimentOutput:<SentimentList sentiments={resultsArray}/>});
         });
   }
 
@@ -130,13 +188,14 @@ class App extends React.Component {
         <button className="btn-primary" onClick={this.sendForSentimentAnalysis}>Analyze Sentiment</button>
         <button className="btn-primary" onClick={this.sendForEmotionAnalysis}>Analyze Emotion</button>
          <br/><br/>
-         <h2>"DEBUG : response from Watson with NODE by JSON over HTTP"</h2>
-         <br/>{this.logvalue}
+         <h2>"DEBUG : last response (buffered) from Watson with NODE by JSON over HTTP"</h2>
+         <br/>{this.state.logvalue}
          <br/><br/>
-         <h2>"OUTPUT : response from Watson with REAL"</h2>
-         <br/>{this.state.sentimentOutput}
+         <h2>"OUTPUT : response from Watson with REAL"</h2> 
+         <div id="output"></div>
+         <br/>{this.state.sentimentOutput}   
       </div>
       );
     }
-}
+}//
 export default App;
