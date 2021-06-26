@@ -23,7 +23,9 @@ class EmotionTable extends React.Component {
             </thead>
             <tbody>
             {
-            this.props.emotions.map((item, index) => {
+            this.props.emotions.map((classItem, classIndex) => {
+            return(
+            classItem.map((item, index) => {
                 return(
                 <tr>
                     <td>{JSON.stringify(index)}</td>
@@ -37,6 +39,7 @@ class EmotionTable extends React.Component {
                     <td>{JSON.stringify(item.relevance)}</td>
                 </tr>
                 ); 
+            }))
             })
             }
             </tbody>
